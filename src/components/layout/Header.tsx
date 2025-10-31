@@ -24,7 +24,7 @@ export default function Header({ onMenuClick, title = "Notas Claras" }: HeaderPr
           <div className="flex items-center">
             <button
               onClick={onMenuClick}
-              className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 lg:hidden"
+              className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
             >
               <Menu className="h-6 w-6" />
             </button>

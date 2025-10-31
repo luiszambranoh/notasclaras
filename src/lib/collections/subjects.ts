@@ -21,8 +21,7 @@ export class SubjectsCollection {
 
   static async getSubjects(userId: string): Promise<Subject[]> {
     const q = query(
-      collection(db, this.collectionName),
-      where("userId", "==", userId),
+      collection(db, `users/${userId}/subjects`),
       orderBy("name", "asc")
     );
     const querySnapshot = await getDocs(q);
@@ -34,8 +33,8 @@ export class SubjectsCollection {
     } as Subject));
   }
 
-  static async getSubjectById(id: string): Promise<Subject | null> {
-    const docSnap = await getDoc(doc(db, this.collectionName, id));
+  static async getSubjectById(userId: string, id: string): Promise<Subject | null> {
+    const docSnap = await getDoc(doc(db, `users/${userId}/subjects`, id));
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
@@ -48,9 +47,9 @@ export class SubjectsCollection {
     return null;
   }
 
-  static async createSubject(subjectData: Omit<Subject, "id" | "createdAt" | "updatedAt">): Promise<string> {
+  static async createSubject(userId: string, subjectData: Omit<Subject, "id" | "createdAt" | "updatedAt">): Promise<string> {
     const now = new Date();
-    const docRef = await addDoc(collection(db, this.collectionName), {
+    const docRef = await addDoc(collection(db, `users/${userId}/subjects`), {
       ...subjectData,
       createdAt: now,
       updatedAt: now,
@@ -58,15 +57,15 @@ export class SubjectsCollection {
     return docRef.id;
   }
 
-  static async updateSubject(id: string, updates: Partial<Omit<Subject, "id" | "userId" | "createdAt">>): Promise<void> {
-    await updateDoc(doc(db, this.collectionName, id), {
+  static async updateSubject(userId: string, id: string, updates: Partial<Omit<Subject, "id" | "userId" | "createdAt">>): Promise<void> {
+    await updateDoc(doc(db, `users/${userId}/subjects`, id), {
       ...updates,
       updatedAt: new Date(),
     });
   }
 
-  static async deleteSubject(id: string): Promise<void> {
-    await deleteDoc(doc(db, this.collectionName, id));
+  static async deleteSubject(userId: string, id: string): Promise<void> {
+    await deleteDoc(doc(db, `users/${userId}/subjects`, id));
   }
 
   static getDayName(day: string): string {
@@ -82,8 +81,8 @@ export class SubjectsCollection {
     return days[day as keyof typeof days] || day;
   }
 
-  static getRandomColor(): string {
-    const colors = [
+  static getPresetColors(): string[] {
+    return [
       "#3B82F6", // blue
       "#EF4444", // red
       "#10B981", // green
@@ -95,6 +94,10 @@ export class SubjectsCollection {
       "#F97316", // orange
       "#6366F1"  // indigo
     ];
+  }
+
+  static getRandomColor(): string {
+    const colors = this.getPresetColors();
     return colors[Math.floor(Math.random() * colors.length)];
   }
 }

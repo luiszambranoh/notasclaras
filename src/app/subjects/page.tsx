@@ -96,9 +96,9 @@ export default function SubjectsPage() {
       };
 
       if (editingSubject) {
-        await SubjectsCollection.updateSubject(editingSubject.id!, subjectData);
+        await SubjectsCollection.updateSubject(user.uid, editingSubject.id!, subjectData);
       } else {
-        await SubjectsCollection.createSubject(subjectData);
+        await SubjectsCollection.createSubject(user.uid, subjectData);
       }
       await loadData();
       setShowForm(false);
@@ -124,8 +124,11 @@ export default function SubjectsPage() {
   const handleDelete = async (id: string) => {
     if (confirm("¿Estás seguro de que quieres eliminar esta materia?")) {
       try {
-        await SubjectsCollection.deleteSubject(id);
-        await loadData();
+        const user = AuthService.getCurrentUser();
+        if (user) {
+          await SubjectsCollection.deleteSubject(user.uid, id);
+          await loadData();
+        }
       } catch (error) {
         console.error("Error deleting subject:", error);
         alert("Error al eliminar la materia. Por favor, intenta de nuevo.");

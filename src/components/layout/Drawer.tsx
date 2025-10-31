@@ -34,7 +34,7 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={onClose}
         />
       )}
@@ -49,7 +49,7 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
           <h2 className="text-xl font-bold text-gray-900">Notas Claras</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 lg:hidden"
+            className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
           >
             <X className="h-6 w-6" />
           </button>

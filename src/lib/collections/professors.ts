@@ -6,8 +6,8 @@ export interface Professor {
   userId: string;
   name: string;
   email?: string;
+  phone?: string;
   subject: string;
-  officeHours?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,8 +17,7 @@ export class ProfessorsCollection {
 
   static async getProfessors(userId: string): Promise<Professor[]> {
     const q = query(
-      collection(db, this.collectionName),
-      where("userId", "==", userId),
+      collection(db, `users/${userId}/professors`),
       orderBy("name", "asc")
     );
     const querySnapshot = await getDocs(q);
@@ -30,8 +29,8 @@ export class ProfessorsCollection {
     } as Professor));
   }
 
-  static async getProfessorById(id: string): Promise<Professor | null> {
-    const docSnap = await getDoc(doc(db, this.collectionName, id));
+  static async getProfessorById(userId: string, id: string): Promise<Professor | null> {
+    const docSnap = await getDoc(doc(db, `users/${userId}/professors`, id));
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
@@ -44,9 +43,9 @@ export class ProfessorsCollection {
     return null;
   }
 
-  static async createProfessor(professorData: Omit<Professor, "id" | "createdAt" | "updatedAt">): Promise<string> {
+  static async createProfessor(userId: string, professorData: Omit<Professor, "id" | "createdAt" | "updatedAt">): Promise<string> {
     const now = new Date();
-    const docRef = await addDoc(collection(db, this.collectionName), {
+    const docRef = await addDoc(collection(db, `users/${userId}/professors`), {
       ...professorData,
       createdAt: now,
       updatedAt: now,
@@ -54,14 +53,14 @@ export class ProfessorsCollection {
     return docRef.id;
   }
 
-  static async updateProfessor(id: string, updates: Partial<Omit<Professor, "id" | "userId" | "createdAt">>): Promise<void> {
-    await updateDoc(doc(db, this.collectionName, id), {
+  static async updateProfessor(userId: string, id: string, updates: Partial<Omit<Professor, "id" | "userId" | "createdAt">>): Promise<void> {
+    await updateDoc(doc(db, `users/${userId}/professors`, id), {
       ...updates,
       updatedAt: new Date(),
     });
   }
 
-  static async deleteProfessor(id: string): Promise<void> {
-    await deleteDoc(doc(db, this.collectionName, id));
+  static async deleteProfessor(userId: string, id: string): Promise<void> {
+    await deleteDoc(doc(db, `users/${userId}/professors`, id));
   }
 }

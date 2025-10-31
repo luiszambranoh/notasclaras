@@ -1,29 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow users to read/write their own user document
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    // Allow users to read/write data in their subcollections (homework, exams)
+    // Allow users to read/write their own user document and all subcollections
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    // Allow users to read/write their homework directly
-    match /homework/{homeworkId} {
-      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
-    }
-    // Allow users to read/write their exams directly
-    match /exams/{examId} {
-      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
-    }
-    // Allow users to read/write their professors
-    match /professors/{professorId} {
-      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
-    }
-    // Allow users to read/write their subjects
-    match /subjects/{subjectId} {
-      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
     }
   }
 }

@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { AuthService } from "../../lib/auth";
 import { ProfessorsCollection, Professor } from "../../lib/collections/professors";
 import Layout from "../../components/layout/Layout";
-import { Plus, Edit, Trash2, Mail, Clock } from "lucide-react";
+import Modal from "../../components/ui/Modal";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
+import { Plus, Edit, Trash2, Mail, Phone } from "lucide-react";
 
 export default function ProfessorsPage() {
   const [professors, setProfessors] = useState<Professor[]>([]);
@@ -14,8 +16,8 @@ export default function ProfessorsPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
-    officeHours: ""
+    phone: "",
+    subject: ""
   });
 
   useEffect(() => {
@@ -51,9 +53,9 @@ export default function ProfessorsPage() {
 
     try {
       if (editingProfessor) {
-        await ProfessorsCollection.updateProfessor(editingProfessor.id!, formData);
+        await ProfessorsCollection.updateProfessor(user.uid, editingProfessor.id!, formData);
       } else {
-        await ProfessorsCollection.createProfessor({
+        await ProfessorsCollection.createProfessor(user.uid, {
           ...formData,
           userId: user.uid
         });
@@ -61,7 +63,7 @@ export default function ProfessorsPage() {
       await loadProfessors();
       setShowForm(false);
       setEditingProfessor(null);
-      setFormData({ name: "", email: "", subject: "", officeHours: "" });
+      setFormData({ name: "", email: "", phone: "", subject: "" });
     } catch (error) {
       console.error("Error saving professor:", error);
       alert("Error al guardar el profesor. Por favor, intenta de nuevo.");
@@ -73,8 +75,8 @@ export default function ProfessorsPage() {
     setFormData({
       name: professor.name,
       email: professor.email || "",
-      subject: professor.subject,
-      officeHours: professor.officeHours || ""
+      phone: professor.phone || "",
+      subject: professor.subject
     });
     setShowForm(true);
   };
@@ -82,8 +84,11 @@ export default function ProfessorsPage() {
   const handleDelete = async (id: string) => {
     if (confirm("¿Estás seguro de que quieres eliminar este profesor?")) {
       try {
-        await ProfessorsCollection.deleteProfessor(id);
-        await loadProfessors();
+        const user = AuthService.getCurrentUser();
+        if (user) {
+          await ProfessorsCollection.deleteProfessor(user.uid, id);
+          await loadProfessors();
+        }
       } catch (error) {
         console.error("Error deleting professor:", error);
         alert("Error al eliminar el profesor. Por favor, intenta de nuevo.");
@@ -94,7 +99,7 @@ export default function ProfessorsPage() {
   const resetForm = () => {
     setShowForm(false);
     setEditingProfessor(null);
-    setFormData({ name: "", email: "", subject: "", officeHours: "" });
+    setFormData({ name: "", email: "", phone: "", subject: "" });
   };
 
   if (loading) {
@@ -178,15 +183,15 @@ export default function ProfessorsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Horario de Oficina
+                    Teléfono
                   </label>
                   <input
-                    type="text"
-                    name="officeHours"
-                    value={formData.officeHours}
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Ej: Lunes 2-4 PM"
+                    placeholder="Ej: +58 412 123 4567"
                   />
                 </div>
                 <div className="flex space-x-3 pt-4">
@@ -262,10 +267,10 @@ export default function ProfessorsPage() {
                   </div>
                 )}
 
-                {professor.officeHours && (
+                {professor.phone && (
                   <div className="flex items-center text-sm text-gray-600">
-                    <Clock className="h-4 w-4 mr-2" />
-                    {professor.officeHours}
+                    <Phone className="h-4 w-4 mr-2" />
+                    {professor.phone}
                   </div>
                 )}
               </div>

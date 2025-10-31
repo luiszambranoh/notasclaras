@@ -19,8 +19,7 @@ export class ExamsCollection {
 
   static async getExams(userId: string): Promise<Exam[]> {
     const q = query(
-      collection(db, this.collectionName),
-      where("userId", "==", userId),
+      collection(db, `users/${userId}/exams`),
       orderBy("examDate", "asc")
     );
     const querySnapshot = await getDocs(q);
@@ -33,8 +32,8 @@ export class ExamsCollection {
     } as Exam));
   }
 
-  static async getExamById(id: string): Promise<Exam | null> {
-    const docSnap = await getDoc(doc(db, this.collectionName, id));
+  static async getExamById(userId: string, id: string): Promise<Exam | null> {
+    const docSnap = await getDoc(doc(db, `users/${userId}/exams`, id));
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
@@ -48,9 +47,9 @@ export class ExamsCollection {
     return null;
   }
 
-  static async createExam(examData: Omit<Exam, "id" | "createdAt" | "updatedAt">): Promise<string> {
+  static async createExam(userId: string, examData: Omit<Exam, "id" | "createdAt" | "updatedAt">): Promise<string> {
     const now = new Date();
-    const docRef = await addDoc(collection(db, this.collectionName), {
+    const docRef = await addDoc(collection(db, `users/${userId}/exams`), {
       ...examData,
       createdAt: now,
       updatedAt: now,
@@ -58,14 +57,14 @@ export class ExamsCollection {
     return docRef.id;
   }
 
-  static async updateExam(id: string, updates: Partial<Omit<Exam, "id" | "userId" | "createdAt">>): Promise<void> {
-    await updateDoc(doc(db, this.collectionName, id), {
+  static async updateExam(userId: string, id: string, updates: Partial<Omit<Exam, "id" | "userId" | "createdAt">>): Promise<void> {
+    await updateDoc(doc(db, `users/${userId}/exams`, id), {
       ...updates,
       updatedAt: new Date(),
     });
   }
 
-  static async deleteExam(id: string): Promise<void> {
-    await deleteDoc(doc(db, this.collectionName, id));
+  static async deleteExam(userId: string, id: string): Promise<void> {
+    await deleteDoc(doc(db, `users/${userId}/exams`, id));
   }
 }

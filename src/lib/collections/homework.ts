@@ -18,8 +18,7 @@ export class HomeworkCollection {
 
   static async getHomework(userId: string): Promise<Homework[]> {
     const q = query(
-      collection(db, this.collectionName),
-      where("userId", "==", userId),
+      collection(db, `users/${userId}/homework`),
       orderBy("dueDate", "asc")
     );
     const querySnapshot = await getDocs(q);
@@ -32,8 +31,8 @@ export class HomeworkCollection {
     } as Homework));
   }
 
-  static async getHomeworkById(id: string): Promise<Homework | null> {
-    const docSnap = await getDoc(doc(db, this.collectionName, id));
+  static async getHomeworkById(userId: string, id: string): Promise<Homework | null> {
+    const docSnap = await getDoc(doc(db, `users/${userId}/homework`, id));
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
@@ -47,9 +46,9 @@ export class HomeworkCollection {
     return null;
   }
 
-  static async createHomework(homeworkData: Omit<Homework, "id" | "createdAt" | "updatedAt">): Promise<string> {
+  static async createHomework(userId: string, homeworkData: Omit<Homework, "id" | "createdAt" | "updatedAt">): Promise<string> {
     const now = new Date();
-    const docRef = await addDoc(collection(db, this.collectionName), {
+    const docRef = await addDoc(collection(db, `users/${userId}/homework`), {
       ...homeworkData,
       createdAt: now,
       updatedAt: now,
@@ -57,14 +56,14 @@ export class HomeworkCollection {
     return docRef.id;
   }
 
-  static async updateHomework(id: string, updates: Partial<Omit<Homework, "id" | "userId" | "createdAt">>): Promise<void> {
-    await updateDoc(doc(db, this.collectionName, id), {
+  static async updateHomework(userId: string, id: string, updates: Partial<Omit<Homework, "id" | "userId" | "createdAt">>): Promise<void> {
+    await updateDoc(doc(db, `users/${userId}/homework`, id), {
       ...updates,
       updatedAt: new Date(),
     });
   }
 
-  static async deleteHomework(id: string): Promise<void> {
-    await deleteDoc(doc(db, this.collectionName, id));
+  static async deleteHomework(userId: string, id: string): Promise<void> {
+    await deleteDoc(doc(db, `users/${userId}/homework`, id));
   }
 }
