@@ -14,6 +14,7 @@ export default function SubjectsPage() {
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const { openModal, closeModal } = useModal();
   const [formData, setFormData] = useState({
     name: "",

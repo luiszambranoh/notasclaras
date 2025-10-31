@@ -7,7 +7,14 @@ import { AuthService } from "../lib/auth";
 import { UsersCollection } from "../lib/collections/users";
 import { HomeworkCollection, Homework } from "../lib/collections/homework";
 import { ExamsCollection, Exam } from "../lib/collections/exams";
+import { SubjectsCollection } from "../lib/collections/subjects";
+import { ProfessorsCollection } from "../lib/collections/professors";
+import { SearchService, SearchableItem, SearchFilters } from "../lib/search";
 import Layout from "../components/layout/Layout";
+import SearchBar from "../components/ui/SearchBar";
+import FilterPanel from "../components/ui/FilterPanel";
+import { Subject } from "../lib/collections/subjects";
+import { Professor } from "../lib/collections/professors";
 
 type Event = (Homework & { type: 'homework' }) | (Exam & { type: 'exam' });
 
@@ -15,11 +22,21 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [professors, setProfessors] = useState<Professor[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState<SearchFilters>({
+    query: "",
+    status: "all",
+    type: "all"
+  });
+  const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
 
-  // Calculate stats
-  const pendingHomework = events.filter(e => e.type === 'homework' && !e.completed).length;
-  const upcomingExams = events.filter(e => {
+  // Calculate stats from filtered events
+  const pendingHomework = filteredEvents.filter(e => e.type === 'homework' && !e.completed).length;
+  const upcomingExams = filteredEvents.filter(e => {
     if (e.type !== 'exam') return false;
     const examDate = e.examDate;
     const today = new Date();
@@ -27,14 +44,14 @@ export default function Dashboard() {
     return examDate >= today && examDate <= weekFromNow && !e.completed;
   }).length;
 
-  const completedToday = events.filter(e => {
+  const completedToday = filteredEvents.filter(e => {
     const eventDate = e.type === 'homework' ? e.dueDate : e.examDate;
     const today = new Date();
     return eventDate.toDateString() === today.toDateString() && e.completed;
   }).length;
 
-  // Get upcoming events (next 7 days)
-  const upcomingEvents = events
+  // Get upcoming events (next 7 days) from filtered events
+  const upcomingEvents = filteredEvents
     .filter(e => {
       const eventDate = e.type === 'homework' ? e.dueDate : e.examDate;
       const today = new Date();
@@ -48,6 +65,9 @@ export default function Dashboard() {
     })
     .slice(0, 5); // Show only next 5 events
 
+  // Filter options for the filter panel
+  const filterOptions = SearchService.getFilterOptions(filteredEvents, subjects, professors);
+
   useEffect(() => {
     const unsubscribe = AuthService.onAuthStateChange(async (authUser) => {
       if (authUser) {
@@ -58,8 +78,8 @@ export default function Dashboard() {
           return;
         }
         setUser(authUser);
-        // Load events for dashboard stats
-        await loadEvents(authUser.uid);
+        // Load data for dashboard
+        await loadData(authUser.uid);
       } else {
         router.push("/login");
       }
@@ -69,11 +89,13 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, [router]);
 
-  const loadEvents = async (userId: string) => {
+  const loadData = async (userId: string) => {
     try {
-      const [homework, exams] = await Promise.all([
+      const [homework, exams, subjectsData, professorsData] = await Promise.all([
         HomeworkCollection.getHomework(userId),
-        ExamsCollection.getExams(userId)
+        ExamsCollection.getExams(userId),
+        SubjectsCollection.getSubjects(userId),
+        ProfessorsCollection.getProfessors(userId)
       ]);
 
       const allEvents: Event[] = [
@@ -82,9 +104,58 @@ export default function Dashboard() {
       ];
 
       setEvents(allEvents);
+      setFilteredEvents(allEvents);
+      setSubjects(subjectsData);
+      setProfessors(professorsData);
     } catch (error) {
-      console.error("Error loading events:", error);
+      console.error("Error loading data:", error);
     }
+  };
+
+  // Handle search and filters
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    const newFilters = { ...filters, query };
+    setFilters(newFilters);
+    applyFilters(newFilters);
+  };
+
+  const handleFiltersChange = (newFilters: SearchFilters) => {
+    setFilters(newFilters);
+    applyFilters(newFilters);
+  };
+
+  const applyFilters = (currentFilters: SearchFilters) => {
+    // Simple filtering for now - can be enhanced later
+    let filtered = [...events];
+
+    // Apply search query
+    if (currentFilters.query) {
+      const query = currentFilters.query.toLowerCase();
+      filtered = filtered.filter(event =>
+        event.title.toLowerCase().includes(query) ||
+        event.description.toLowerCase().includes(query) ||
+        event.subject.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply status filter
+    if (currentFilters.status && currentFilters.status !== 'all') {
+      const isCompleted = currentFilters.status === 'completed';
+      filtered = filtered.filter(event => event.completed === isCompleted);
+    }
+
+    // Apply type filter
+    if (currentFilters.type && currentFilters.type !== 'all') {
+      filtered = filtered.filter(event => event.type === currentFilters.type);
+    }
+
+    // Apply subject filter
+    if (currentFilters.subject) {
+      filtered = filtered.filter(event => event.subject === currentFilters.subject);
+    }
+
+    setFilteredEvents(filtered);
   };
 
   if (loading) {
@@ -105,13 +176,24 @@ export default function Dashboard() {
   return (
     <Layout title="Inicio">
       <div className="space-y-6">
+        {/* Search and Filters */}
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+          <div className="p-4">
+            <SearchBar
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFilterClick={() => setShowFilters(true)}
+            />
+          </div>
+        </div>
+
         {/* Welcome Section */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-2">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
               ¡Bienvenido de vuelta!
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               {user.displayName || user.email}
             </p>
           </div>
@@ -119,7 +201,7 @@ export default function Dashboard() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -129,17 +211,17 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                       Tareas Pendientes
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">{pendingHomework}</dd>
+                    <dd className="text-lg font-medium text-gray-900 dark:text-gray-100">{pendingHomework}</dd>
                   </dl>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -149,17 +231,17 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                       Exámenes Próximos
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">{upcomingExams}</dd>
+                    <dd className="text-lg font-medium text-gray-900 dark:text-gray-100">{upcomingExams}</dd>
                   </dl>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -169,10 +251,10 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                       Completadas Hoy
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">{completedToday}</dd>
+                    <dd className="text-lg font-medium text-gray-900 dark:text-gray-100">{completedToday}</dd>
                   </dl>
                 </div>
               </div>
@@ -181,9 +263,9 @@ export default function Dashboard() {
         </div>
 
         {/* Próximos Eventos */}
-        <div className="bg-white shadow rounded-lg">
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
               Próximos Eventos
             </h3>
             {upcomingEvents.length === 0 ? (
@@ -244,6 +326,15 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+
+        {/* Filter Panel */}
+        <FilterPanel
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          filterOptions={filterOptions}
+        />
       </div>
     </Layout>
   );

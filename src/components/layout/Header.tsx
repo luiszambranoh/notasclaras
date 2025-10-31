@@ -2,6 +2,7 @@
 
 import { Menu, LogOut } from "lucide-react";
 import { AuthService } from "../../lib/auth";
+import ThemeToggle from "../ui/ThemeToggle";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -18,7 +19,7 @@ export default function Header({ onMenuClick, title = "Notas Claras" }: HeaderPr
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -28,15 +29,16 @@ export default function Header({ onMenuClick, title = "Notas Claras" }: HeaderPr
             >
               <Menu className="h-6 w-6" />
             </button>
-            <h1 className="ml-2 lg:ml-0 text-xl font-semibold text-gray-900">
+            <h1 className="ml-2 lg:ml-0 text-xl font-semibold text-gray-900 dark:text-gray-100">
               {title}
             </h1>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
             <button
               onClick={handleSignOut}
-              className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700"
               title="Cerrar Sesión"
             >
               <LogOut className="h-5 w-5" />

@@ -18,7 +18,8 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
     description: "",
     subject: "",
     dueDate: "",
-    completed: false
+    completed: false,
+    link: ""
   });
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +31,8 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
         description: editingHomework.description || "",
         subject: editingHomework.subject || "",
         dueDate: editingHomework.dueDate ? editingHomework.dueDate.toISOString().split('T')[0] : "",
-        completed: editingHomework.completed || false
+        completed: editingHomework.completed || false,
+        link: editingHomework.link || ""
       });
     }
   }, [editingHomework]);
@@ -70,6 +72,7 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
         subject: formData.subject,
         dueDate: new Date(formData.dueDate),
         completed: formData.completed,
+        link: formData.link || undefined,
         userId: user.uid
       };
 
@@ -154,6 +157,23 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Enlace (opcional)
+        </label>
+        <input
+          type="url"
+          name="link"
+          value={formData.link}
+          onChange={handleInputChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="https://ejemplo.com/tarea.pdf"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Enlace al PDF o documento de la tarea
+        </p>
       </div>
 
       <div className="flex items-center">

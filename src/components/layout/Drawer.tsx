@@ -41,7 +41,7 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -65,10 +65,10 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
                     href={item.href}
                     onClick={onClose}
                     className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors ${
-                      isActive
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                    }`}
+                        isActive
+                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+                      }`}
                   >
                     <item.icon className="h-5 w-5 mr-3" />
                     {item.name}

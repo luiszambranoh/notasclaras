@@ -5,11 +5,14 @@ import { AuthService } from "../../lib/auth";
 import { UsersCollection } from "../../lib/collections/users";
 import Layout from "../../components/layout/Layout";
 import { User, Mail, Calendar, GraduationCap, MapPin, Save } from "lucide-react";
+import { useTheme } from "../../contexts/ThemeContext";
+import { Moon, Sun, Monitor } from "lucide-react";
 
 export default function SettingsPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [formData, setFormData] = useState({
     displayName: "",
     email: "",
