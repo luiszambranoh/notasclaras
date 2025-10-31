@@ -6,7 +6,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "public",
+    "public": "out",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -15,8 +15,11 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/out/index.html"
+        "destination": "/index.html"
       }
+    ],
+    "predeploy": [
+      "pnpm run build"
     ]
   }
 }
