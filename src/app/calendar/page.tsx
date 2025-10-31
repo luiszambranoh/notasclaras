@@ -16,13 +16,19 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedEvents, setSelectedEvents] = useState<Event[]>([]);
   const { openModal, closeModal } = useModal();
 
   useEffect(() => {
     loadEvents();
   }, [currentDate]);
+
+  useEffect(() => {
+    // Set selected events for today when component loads
+    const todayEvents = getEventsForDate(selectedDate);
+    setSelectedEvents(todayEvents);
+  }, [events, selectedDate]);
 
   const loadEvents = async () => {
     try {
@@ -291,7 +297,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Selected Date Events */}
-        {selectedDate && (
+        {selectedDate && selectedEvents.length > 0 && (
           <div className="bg-white rounded-lg shadow">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">

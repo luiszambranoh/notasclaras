@@ -172,7 +172,7 @@ export default function Dashboard() {
                     <dt className="text-sm font-medium text-gray-500 truncate">
                       Completadas Hoy
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                    <dd className="text-lg font-medium text-gray-900">{completedToday}</dd>
                   </dl>
                 </div>
               </div>
@@ -186,17 +186,62 @@ export default function Dashboard() {
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               Próximos Eventos
             </h3>
-            <div className="text-center py-8">
-              <div className="text-gray-400 mb-2">
-                <span className="text-4xl">📅</span>
+            {upcomingEvents.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-gray-400 mb-2">
+                  <span className="text-4xl">📅</span>
+                </div>
+                <p className="text-sm text-gray-500">
+                  No hay eventos próximos
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Usa el botón + para crear tareas o exámenes
+                </p>
               </div>
-              <p className="text-sm text-gray-500">
-                No hay eventos próximos
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                Usa el botón + para crear tareas o exámenes
-              </p>
-            </div>
+            ) : (
+              <div className="space-y-3">
+                {upcomingEvents.map((event) => {
+                  const eventDate = event.type === 'homework' ? event.dueDate : event.examDate;
+                  const daysUntil = Math.ceil((eventDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+
+                  return (
+                    <div key={event.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`p-2 rounded-md ${
+                          event.type === 'homework' ? 'bg-blue-100' : 'bg-red-100'
+                        }`}>
+                          {event.type === 'homework' ? (
+                            <span className="text-blue-600">📚</span>
+                          ) : (
+                            <span className="text-red-600">📝</span>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 text-sm">{event.title}</h4>
+                          <p className="text-xs text-gray-600">{event.subject}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-gray-500">
+                          {eventDate.toLocaleDateString('es-ES', {
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </div>
+                        <div className={`text-xs font-medium ${
+                          daysUntil === 0 ? 'text-red-600' :
+                          daysUntil === 1 ? 'text-orange-600' : 'text-gray-600'
+                        }`}>
+                          {daysUntil === 0 ? 'Hoy' :
+                           daysUntil === 1 ? 'Mañana' :
+                           `En ${daysUntil} días`}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
