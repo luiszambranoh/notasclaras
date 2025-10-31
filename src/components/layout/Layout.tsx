@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Drawer from "./Drawer";
 import Header from "./Header";
 import FAB from "../ui/FAB";
+import { useModal } from "../../contexts/ModalContext";
+import HomeworkForm from "../forms/HomeworkForm";
+import ExamForm from "../forms/ExamForm";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,15 +17,38 @@ interface LayoutProps {
 export default function Layout({ children, title }: LayoutProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const router = useRouter();
+  const { openModal, closeModal } = useModal();
 
   const handleCreateHomework = () => {
-    // TODO: Open homework creation modal/form
-    console.log("Create homework");
+    console.log("🎯 Abriendo modal para crear nueva tarea");
+    openModal(
+      <HomeworkForm
+        onSuccess={() => {
+          console.log("✅ Tarea creada exitosamente");
+          closeModal();
+          // TODO: Refresh data if needed
+        }}
+        onCancel={closeModal}
+      />,
+      "Nueva Tarea",
+      "md"
+    );
   };
 
   const handleCreateExam = () => {
-    // TODO: Open exam creation modal/form
-    console.log("Create exam");
+    console.log("🎯 Abriendo modal para crear nuevo examen");
+    openModal(
+      <ExamForm
+        onSuccess={() => {
+          console.log("✅ Examen creado exitosamente");
+          closeModal();
+          // TODO: Refresh data if needed
+        }}
+        onCancel={closeModal}
+      />,
+      "Nuevo Examen",
+      "md"
+    );
   };
 
   return (

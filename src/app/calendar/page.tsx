@@ -5,7 +5,10 @@ import { AuthService } from "../../lib/auth";
 import { HomeworkCollection, Homework } from "../../lib/collections/homework";
 import { ExamsCollection, Exam } from "../../lib/collections/exams";
 import Layout from "../../components/layout/Layout";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, BookOpen, FileText } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, BookOpen, FileText, CheckCircle, Circle } from "lucide-react";
+import { useModal } from "../../contexts/ModalContext";
+import HomeworkForm from "../../components/forms/HomeworkForm";
+import ExamForm from "../../components/forms/ExamForm";
 
 type Event = (Homework & { type: 'homework' }) | (Exam & { type: 'exam' });
 
@@ -15,6 +18,7 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedEvents, setSelectedEvents] = useState<Event[]>([]);
+  const { openModal, closeModal } = useModal();
 
   useEffect(() => {
     loadEvents();
@@ -73,10 +77,91 @@ export default function CalendarPage() {
     });
   };
 
+  const getSubjectColor = (subjectName: string) => {
+    // Find the subject to get its color
+    // For now, return a default color based on subject name hash
+    const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1'];
+    let hash = 0;
+    for (let i = 0; i < subjectName.length; i++) {
+      hash = subjectName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     const dayEvents = getEventsForDate(date);
     setSelectedEvents(dayEvents);
+  };
+
+  const handleEditEvent = (event: Event) => {
+    if (event.type === 'homework') {
+      openModal(
+        <HomeworkForm
+          editingHomework={event}
+          onSuccess={() => {
+            closeModal();
+            loadEvents();
+          }}
+          onCancel={closeModal}
+        />,
+        "Editar Tarea",
+        "md"
+      );
+    } else {
+      openModal(
+        <ExamForm
+          editingExam={event}
+          onSuccess={() => {
+            closeModal();
+            loadEvents();
+          }}
+          onCancel={closeModal}
+        />,
+        "Editar Examen",
+        "md"
+      );
+    }
+  };
+
+  const handleDeleteEvent = async (event: Event) => {
+    if (confirm(`¿Estás seguro de que quieres eliminar este ${event.type === 'homework' ? 'tarea' : 'examen'}?`)) {
+      try {
+        const user = AuthService.getCurrentUser();
+        if (user) {
+          if (event.type === 'homework') {
+            await HomeworkCollection.deleteHomework(user.uid, event.id!);
+          } else {
+            await ExamsCollection.deleteExam(user.uid, event.id!);
+          }
+          loadEvents();
+        }
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        alert("Error al eliminar el evento. Por favor, intenta de nuevo.");
+      }
+    }
+  };
+
+  const handleToggleComplete = async (event: Event) => {
+    try {
+      const user = AuthService.getCurrentUser();
+      if (user) {
+        if (event.type === 'homework') {
+          await HomeworkCollection.updateHomework(user.uid, event.id!, {
+            completed: !event.completed
+          });
+        } else {
+          await ExamsCollection.updateExam(user.uid, event.id!, {
+            completed: !event.completed
+          });
+        }
+        loadEvents();
+      }
+    } catch (error) {
+      console.error("Error updating event:", error);
+      alert("Error al actualizar el evento. Por favor, intenta de nuevo.");
+    }
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -188,13 +273,13 @@ export default function CalendarPage() {
                         {dayEvents.slice(0, 3).map((event, eventIndex) => (
                           <div
                             key={eventIndex}
-                            className={`w-1 h-1 rounded-full ${
-                              event.type === 'homework' ? 'bg-blue-500' : 'bg-red-500'
-                            }`}
+                            className="w-2 h-2 rounded-full border border-white shadow-sm"
+                            style={{ backgroundColor: getSubjectColor(event.subject) }}
+                            title={`${event.type === 'homework' ? 'Tarea' : 'Examen'}: ${event.title}`}
                           />
                         ))}
                         {dayEvents.length > 3 && (
-                          <div className="w-1 h-1 rounded-full bg-gray-400" />
+                          <div className="w-2 h-2 rounded-full bg-gray-400 border border-white shadow-sm" title="+ más eventos" />
                         )}
                       </div>
                     )}
@@ -237,8 +322,43 @@ export default function CalendarPage() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{event.title}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{event.description}</p>
+                        <div className="flex items-center justify-between">
+                          <h4 className={`font-medium ${event.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                            {event.title}
+                          </h4>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleToggleComplete(event)}
+                              className={`p-1 rounded-full ${
+                                event.completed ? 'text-green-600 hover:bg-green-100' : 'text-gray-400 hover:bg-gray-100'
+                              }`}
+                              title={event.completed ? "Marcar como pendiente" : "Marcar como completado"}
+                            >
+                              {event.completed ? (
+                                <CheckCircle className="h-5 w-5" />
+                              ) : (
+                                <Circle className="h-5 w-5" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleEditEvent(event)}
+                              className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                              title="Editar"
+                            >
+                              <span className="text-sm">✏️</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteEvent(event)}
+                              className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"
+                              title="Eliminar"
+                            >
+                              <span className="text-sm">🗑️</span>
+                            </button>
+                          </div>
+                        </div>
+                        <p className={`text-sm mt-1 ${event.completed ? 'line-through text-gray-400' : 'text-gray-600'}`}>
+                          {event.description}
+                        </p>
                         <div className="flex items-center mt-2 text-xs text-gray-500">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             event.type === 'homework' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'
@@ -246,6 +366,9 @@ export default function CalendarPage() {
                             {event.type === 'homework' ? 'Tarea' : 'Examen'}
                           </span>
                           <span className="ml-2">{event.subject}</span>
+                          {event.type === 'exam' && 'location' in event && event.location && (
+                            <span className="ml-2">📍 {event.location}</span>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { useState } from "react";
+import { Plus, BookOpen, FileText } from "lucide-react";
 
 interface FABProps {
   onCreateHomework: () => void;
@@ -8,32 +9,55 @@ interface FABProps {
 }
 
 export default function FAB({ onCreateHomework, onCreateExam }: FABProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-40">
       <div className="relative">
-        {/* Main FAB Button */}
-        <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-colors duration-200">
-          <Plus className="h-6 w-6" />
-        </button>
-
         {/* Action Buttons */}
-        <div className="absolute bottom-full right-0 mb-2 space-y-2">
+        <div
+          className={`absolute bottom-full right-1/2 transform translate-x-1/2 mb-4 space-y-3 transition-all duration-300 ${
+            isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
+        >
           <button
-            onClick={onCreateExam}
-            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg transition-all duration-200 flex items-center justify-center min-w-[48px] min-h-[48px] opacity-90 hover:opacity-100"
-            title="Crear Examen"
+            onClick={() => {
+              onCreateExam();
+              setIsOpen(false);
+            }}
+            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg transition-all duration-200 flex items-center space-x-2 min-h-[48px] pl-4 pr-4"
+            title="Nuevo Examen"
           >
-            <span className="text-xs font-medium">📝</span>
+            <span className="text-sm font-medium">Nuevo Examen</span>
+            <FileText className="h-5 w-5" />
           </button>
 
           <button
-            onClick={onCreateHomework}
-            className="bg-green-600 hover:bg-green-700 text-white rounded-full p-3 shadow-lg transition-all duration-200 flex items-center justify-center min-w-[48px] min-h-[48px] opacity-90 hover:opacity-100"
-            title="Crear Tarea"
+            onClick={() => {
+              onCreateHomework();
+              setIsOpen(false);
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white rounded-full p-3 shadow-lg transition-all duration-200 flex items-center space-x-2 min-h-[48px] pl-4 pr-4"
+            title="Nueva Tarea"
           >
-            <span className="text-xs font-medium">📚</span>
+            <span className="text-sm font-medium">Nueva Tarea</span>
+            <BookOpen className="h-5 w-5" />
           </button>
         </div>
+
+        {/* Main FAB Button */}
+        <button
+          onClick={toggleMenu}
+          className={`bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 transform ${
+            isOpen ? "rotate-45" : "rotate-0"
+          }`}
+        >
+          <Plus className="h-6 w-6" />
+        </button>
       </div>
     </div>
   );

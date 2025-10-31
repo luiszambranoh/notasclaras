@@ -5,12 +5,48 @@ import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
 import { AuthService } from "../lib/auth";
 import { UsersCollection } from "../lib/collections/users";
+import { HomeworkCollection, Homework } from "../lib/collections/homework";
+import { ExamsCollection, Exam } from "../lib/collections/exams";
 import Layout from "../components/layout/Layout";
+
+type Event = (Homework & { type: 'homework' }) | (Exam & { type: 'exam' });
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<Event[]>([]);
   const router = useRouter();
+
+  // Calculate stats
+  const pendingHomework = events.filter(e => e.type === 'homework' && !e.completed).length;
+  const upcomingExams = events.filter(e => {
+    if (e.type !== 'exam') return false;
+    const examDate = e.examDate;
+    const today = new Date();
+    const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return examDate >= today && examDate <= weekFromNow && !e.completed;
+  }).length;
+
+  const completedToday = events.filter(e => {
+    const eventDate = e.type === 'homework' ? e.dueDate : e.examDate;
+    const today = new Date();
+    return eventDate.toDateString() === today.toDateString() && e.completed;
+  }).length;
+
+  // Get upcoming events (next 7 days)
+  const upcomingEvents = events
+    .filter(e => {
+      const eventDate = e.type === 'homework' ? e.dueDate : e.examDate;
+      const today = new Date();
+      const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return eventDate >= today && eventDate <= weekFromNow && !e.completed;
+    })
+    .sort((a, b) => {
+      const dateA = a.type === 'homework' ? a.dueDate : a.examDate;
+      const dateB = b.type === 'homework' ? b.dueDate : b.examDate;
+      return dateA.getTime() - dateB.getTime();
+    })
+    .slice(0, 5); // Show only next 5 events
 
   useEffect(() => {
     const unsubscribe = AuthService.onAuthStateChange(async (authUser) => {
@@ -22,6 +58,8 @@ export default function Dashboard() {
           return;
         }
         setUser(authUser);
+        // Load events for dashboard stats
+        await loadEvents(authUser.uid);
       } else {
         router.push("/login");
       }
@@ -30,6 +68,24 @@ export default function Dashboard() {
 
     return () => unsubscribe();
   }, [router]);
+
+  const loadEvents = async (userId: string) => {
+    try {
+      const [homework, exams] = await Promise.all([
+        HomeworkCollection.getHomework(userId),
+        ExamsCollection.getExams(userId)
+      ]);
+
+      const allEvents: Event[] = [
+        ...homework.map(h => ({ ...h, type: 'homework' as const })),
+        ...exams.map(e => ({ ...e, type: 'exam' as const }))
+      ];
+
+      setEvents(allEvents);
+    } catch (error) {
+      console.error("Error loading events:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -76,7 +132,7 @@ export default function Dashboard() {
                     <dt className="text-sm font-medium text-gray-500 truncate">
                       Tareas Pendientes
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                    <dd className="text-lg font-medium text-gray-900">{pendingHomework}</dd>
                   </dl>
                 </div>
               </div>
@@ -96,7 +152,7 @@ export default function Dashboard() {
                     <dt className="text-sm font-medium text-gray-500 truncate">
                       Exámenes Próximos
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                    <dd className="text-lg font-medium text-gray-900">{upcomingExams}</dd>
                   </dl>
                 </div>
               </div>

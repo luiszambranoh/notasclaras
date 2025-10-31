@@ -6,13 +6,15 @@ import { SubjectsCollection, Subject } from "../../lib/collections/subjects";
 import { ProfessorsCollection, Professor } from "../../lib/collections/professors";
 import Layout from "../../components/layout/Layout";
 import { Plus, Edit, Trash2, Clock, User } from "lucide-react";
+import { useModal } from "../../contexts/ModalContext";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 export default function SubjectsPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const { openModal, closeModal } = useModal();
   const [formData, setFormData] = useState({
     name: "",
     professorId: "",

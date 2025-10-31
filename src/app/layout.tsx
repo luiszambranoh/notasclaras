@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ModalProvider } from "../contexts/ModalContext";
+import Modal from "../components/ui/Modal";
 
 export const metadata: Metadata = {
   title: "Notas Claras",
@@ -14,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        {children}
+        <ModalProvider>
+          {children}
+          <Modal />
+        </ModalProvider>
       </body>
     </html>
   );
