@@ -264,9 +264,8 @@ export default function SettingsPage() {
           </div>
           <div className="p-6">
             <div className="space-y-2 text-sm text-gray-600">
-              <p><strong>Notas Claras</strong> - Versión 0.1.0</p>
-              <p>Aplicación para estudiantes venezolanos</p>
-              <p>Desarrollada con Next.js, Firebase y Tailwind CSS</p>
+              <p><strong>Notas Claras</strong></p>
+              <p>Desarrollada por Luis Zambrano</p>
             </div>
           </div>
         </div>
