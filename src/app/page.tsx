@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
 import { AuthService } from "../lib/auth";
 import { UsersCollection } from "../lib/collections/users";
+import Layout from "../components/layout/Layout";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -30,15 +31,6 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, [router]);
 
-  const handleSignOut = async () => {
-    try {
-      await AuthService.signOutUser();
-      router.push("/login");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -55,53 +47,103 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Notas Claras</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
-                Bienvenido, {user.displayName || user.email}
-              </span>
-              <button
-                onClick={handleSignOut}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Cerrar Sesión
-              </button>
-            </div>
+    <Layout title="Inicio">
+      <div className="space-y-6">
+        {/* Welcome Section */}
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-2">
+              ¡Bienvenido de vuelta!
+            </h2>
+            <p className="text-sm text-gray-600">
+              {user.displayName || user.email}
+            </p>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">
-                Información del Usuario (Prueba)
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <span className="font-medium text-gray-700">UID:</span>{" "}
-                  <span className="text-gray-900 font-mono text-sm">{user.uid}</span>
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">📚</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="font-medium text-gray-700">Email:</span>{" "}
-                  <span className="text-gray-900">{user.email}</span>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Tareas Pendientes
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                  </dl>
                 </div>
-                <div>
-                  <span className="font-medium text-gray-700">Nombre:</span>{" "}
-                  <span className="text-gray-900">{user.displayName || "No especificado"}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">📝</span>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Exámenes Próximos
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">✅</span>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Completadas Hoy
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                  </dl>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
-    </div>
+
+        {/* Próximos Eventos */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Próximos Eventos
+            </h3>
+            <div className="text-center py-8">
+              <div className="text-gray-400 mb-2">
+                <span className="text-4xl">📅</span>
+              </div>
+              <p className="text-sm text-gray-500">
+                No hay eventos próximos
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Usa el botón + para crear tareas o exámenes
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 }

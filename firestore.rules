@@ -9,12 +9,20 @@ service cloud.firestore {
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    // Allow users to read/write their homework directly (if not using subcollections)
+    // Allow users to read/write their homework directly
     match /homework/{homeworkId} {
       allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
     }
-    // Allow users to read/write their exams directly (if not using subcollections)
+    // Allow users to read/write their exams directly
     match /exams/{examId} {
+      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+    // Allow users to read/write their professors
+    match /professors/{professorId} {
+      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+    // Allow users to read/write their subjects
+    match /subjects/{subjectId} {
       allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
     }
   }
