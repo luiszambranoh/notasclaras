@@ -80,7 +80,7 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
         subject: data.subject,
         dueDate: new Date(data.dueDate),
         completed: data.completed,
-        link: data.link || undefined,
+        link: data.link || "",
         userId: user.uid
       };
 
@@ -161,15 +161,15 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
         <Label htmlFor="link">Enlace (opcional)</Label>
         <Input
           id="link"
-          type="url"
+          type="text"
           {...register("link")}
-          placeholder="https://ejemplo.com/tarea.pdf"
+          placeholder="Enlace al PDF o documento de la tarea"
         />
         {errors.link && (
           <p className="text-sm text-red-600 mt-1">{errors.link.message}</p>
         )}
         <p className="text-xs text-gray-500 mt-1">
-          Enlace al PDF o documento de la tarea
+          Enlace opcional al PDF o documento de la tarea
         </p>
       </div>
 

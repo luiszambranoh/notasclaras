@@ -8,6 +8,12 @@ export const homeworkSchema = z.object({
   dueDate: z.string().min(1, "La fecha de entrega es requerida"),
   completed: z.boolean(),
   link: z.string().optional(),
+}).refine((data) => {
+  // If link is provided, it should be a string (no validation)
+  if (data.link !== undefined && data.link !== "") {
+    return typeof data.link === "string";
+  }
+  return true;
 });
 
 export type HomeworkFormData = z.infer<typeof homeworkSchema>;

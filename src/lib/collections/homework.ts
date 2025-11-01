@@ -9,6 +9,7 @@ export interface Homework {
   dueDate: Date;
   subject: string;
   completed: boolean;
+  link?: string;
   createdAt: Date;
   updatedAt: Date;
 }
