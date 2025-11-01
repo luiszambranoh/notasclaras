@@ -12,14 +12,16 @@ import ExamForm from "../forms/ExamForm";
 interface LayoutProps {
   children: React.ReactNode;
   title?: string;
+  onCreateHomework?: () => void;
+  onCreateExam?: () => void;
 }
 
-export default function Layout({ children, title }: LayoutProps) {
+export default function Layout({ children, title, onCreateHomework, onCreateExam }: LayoutProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const router = useRouter();
   const { openModal, closeModal } = useModal();
 
-  const handleCreateHomework = () => {
+  const defaultHandleCreateHomework = () => {
     console.log("🎯 Abriendo modal para crear nueva tarea");
     openModal(
       <HomeworkForm
@@ -35,7 +37,7 @@ export default function Layout({ children, title }: LayoutProps) {
     );
   };
 
-  const handleCreateExam = () => {
+  const defaultHandleCreateExam = () => {
     console.log("🎯 Abriendo modal para crear nuevo examen");
     openModal(
       <ExamForm
@@ -68,8 +70,8 @@ export default function Layout({ children, title }: LayoutProps) {
 
       {/* Floating Action Button */}
       <FAB
-        onCreateHomework={handleCreateHomework}
-        onCreateExam={handleCreateExam}
+        onCreateHomework={onCreateHomework || defaultHandleCreateHomework}
+        onCreateExam={onCreateExam || defaultHandleCreateExam}
       />
     </div>
   );

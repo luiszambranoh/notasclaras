@@ -37,7 +37,7 @@ export type ProfessorFormData = z.infer<typeof professorSchema>;
 // Subject Schema
 export const subjectSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
-  professorId: z.string().optional(),
+  professorId: z.string().optional().nullable(),
   schedule: z.array(z.object({
     day: z.string().min(1, "El día es requerido"),
     startTime: z.string().min(1, "La hora de inicio es requerida"),

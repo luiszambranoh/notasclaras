@@ -7,17 +7,12 @@ import Layout from "../../components/layout/Layout";
 import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Plus, Edit, Trash2, Mail, Phone } from "lucide-react";
 import { useModal } from "../../contexts/ModalContext";
+import ProfessorForm from "./components/ProfessorForm";
 
 export default function ProfessorsPage() {
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProfessor, setEditingProfessor] = useState<Professor | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: ""
-  });
   const { openModal, closeModal } = useModal();
 
   useEffect(() => {
@@ -38,121 +33,9 @@ export default function ProfessorsPage() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const user = AuthService.getCurrentUser();
-    if (!user) return;
-
-    try {
-      if (editingProfessor) {
-        await ProfessorsCollection.updateProfessor(user.uid, editingProfessor.id!, formData);
-      } else {
-        await ProfessorsCollection.createProfessor(user.uid, {
-          ...formData,
-          userId: user.uid
-        });
-      }
-      await loadProfessors();
-      closeModal();
-      setEditingProfessor(null);
-      setFormData({ name: "", email: "", phone: "", subject: "" });
-    } catch (error) {
-      console.error("Error saving professor:", error);
-      alert("Error al guardar el profesor. Por favor, intenta de nuevo.");
-    }
-  };
-
   const handleEdit = (professor: Professor) => {
     setEditingProfessor(professor);
-    setFormData({
-      name: professor.name,
-      email: professor.email || "",
-      phone: professor.phone || "",
-      subject: professor.subject
-    });
-    openModal(
-      <form onSubmit={handleSubmit} className="p-6 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nombre *
-          </label>
-          <input
-            type="text"
-            name="name"
-            required
-            value={formData.name}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Nombre del profesor"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="profesor@email.com"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Materia *
-          </label>
-          <input
-            type="text"
-            name="subject"
-            required
-            value={formData.subject}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Ej: Matemáticas, Física..."
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Teléfono
-          </label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Ej: +58 412 123 4567"
-          />
-        </div>
-        <div className="flex space-x-3 pt-4">
-          <button
-            type="submit"
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
-          >
-            {editingProfessor ? "Actualizar" : "Agregar"}
-          </button>
-          <button
-            type="button"
-            onClick={closeModal}
-            className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
-          >
-            Cancelar
-          </button>
-        </div>
-      </form>,
-      editingProfessor ? "Editar Profesor" : "Agregar Profesor",
-      "md"
-    );
+    openModal(<ProfessorForm onSuccess={() => { closeModal(); loadProfessors(); }} onCancel={closeModal} editingProfessor={professor} />, "Editar Profesor", "md");
   };
 
   const handleDelete = async (id: string) => {
@@ -168,12 +51,6 @@ export default function ProfessorsPage() {
         alert("Error al eliminar el profesor. Por favor, intenta de nuevo.");
       }
     }
-  };
-
-  const resetForm = () => {
-    closeModal();
-    setEditingProfessor(null);
-    setFormData({ name: "", email: "", phone: "", subject: "" });
   };
 
   if (loading) {
@@ -196,81 +73,7 @@ export default function ProfessorsPage() {
             <p className="text-gray-600">Gestiona la información de tus profesores</p>
           </div>
           <button
-            onClick={() => openModal(
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nombre *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Nombre del profesor"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="profesor@email.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Materia *
-                  </label>
-                  <input
-                    type="text"
-                    name="subject"
-                    required
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Ej: Matemáticas, Física..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Teléfono
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Ej: +58 412 123 4567"
-                  />
-                </div>
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
-                  >
-                    Agregar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </form>,
-              "Agregar Profesor",
-              "md"
-            )}
+            onClick={() => openModal(<ProfessorForm onSuccess={() => { closeModal(); loadProfessors(); }} onCancel={closeModal} />, "Agregar Profesor", "md")}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
           >
             <Plus className="h-5 w-5" />
@@ -292,81 +95,7 @@ export default function ProfessorsPage() {
               Agrega tus profesores para organizar mejor tus tareas y exámenes
             </p>
             <button
-              onClick={() => openModal(
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Nombre *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Nombre del profesor"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="profesor@email.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Materia *
-                    </label>
-                    <input
-                      type="text"
-                      name="subject"
-                      required
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Ej: Matemáticas, Física..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Teléfono
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Ej: +58 412 123 4567"
-                    />
-                  </div>
-                  <div className="flex space-x-3 pt-4">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
-                    >
-                      Agregar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>,
-                "Agregar Primer Profesor",
-                "md"
-              )}
+              onClick={() => openModal(<ProfessorForm onSuccess={() => { closeModal(); loadProfessors(); }} onCancel={closeModal} />, "Agregar Primer Profesor", "md")}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium"
             >
               Agregar Primer Profesor

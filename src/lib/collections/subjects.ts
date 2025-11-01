@@ -5,7 +5,7 @@ export interface Subject {
   id?: string;
   userId: string;
   name: string;
-  professorId?: string;
+  professorId?: string | null;
   schedule: {
     day: string; // 'monday', 'tuesday', etc.
     startTime: string; // '08:00'
