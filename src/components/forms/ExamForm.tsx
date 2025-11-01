@@ -1,9 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthService } from "../../lib/auth";
 import { ExamsCollection } from "../../lib/collections/exams";
 import { SubjectsCollection, Subject } from "../../lib/collections/subjects";
+import { examSchema, ExamFormData } from "../../lib/schemas";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
+import { Textarea } from "../ui/Textarea";
+import { Select } from "../ui/Select";
+import { Label } from "../ui/Label";
 
 interface ExamFormProps {
   onSuccess: () => void;
@@ -13,29 +21,38 @@ interface ExamFormProps {
 
 export default function ExamForm({ onSuccess, onCancel, editingExam }: ExamFormProps) {
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    subject: "",
-    examDate: "",
-    location: "",
-    completed: false
-  });
   const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ExamFormData>({
+    resolver: zodResolver(examSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      subject: "",
+      examDate: "",
+      location: "",
+      completed: false,
+    },
+  });
 
   useEffect(() => {
     loadSubjects();
     if (editingExam) {
-      setFormData({
+      reset({
         title: editingExam.title || "",
         description: editingExam.description || "",
         subject: editingExam.subject || "",
         examDate: editingExam.examDate ? editingExam.examDate.toISOString().split('T')[0] : "",
         location: editingExam.location || "",
-        completed: editingExam.completed || false
+        completed: editingExam.completed || false,
       });
     }
-  }, [editingExam]);
+  }, [editingExam, reset]);
 
   const loadSubjects = async () => {
     try {
@@ -49,30 +66,19 @@ export default function ExamForm({ onSuccess, onCancel, editingExam }: ExamFormP
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
-
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: ExamFormData) => {
     const user = AuthService.getCurrentUser();
     if (!user) return;
 
     setLoading(true);
     try {
       const examData = {
-        title: formData.title,
-        description: formData.description,
-        subject: formData.subject,
-        examDate: new Date(formData.examDate),
-        location: formData.location,
-        completed: formData.completed,
+        title: data.title,
+        description: data.description || "",
+        subject: data.subject,
+        examDate: new Date(data.examDate),
+        location: data.location || "",
+        completed: data.completed,
         userId: user.uid
       };
 
@@ -94,113 +100,92 @@ export default function ExamForm({ onSuccess, onCancel, editingExam }: ExamFormP
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Título *
-        </label>
-        <input
-          type="text"
-          name="title"
-          required
-          value={formData.title}
-          onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        <Label htmlFor="title">Título *</Label>
+        <Input
+          id="title"
+          {...register("title")}
           placeholder="Título del examen"
         />
+        {errors.title && (
+          <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>
+        )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Descripción
-        </label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        <Label htmlFor="description">Descripción</Label>
+        <Textarea
+          id="description"
+          {...register("description")}
           placeholder="Descripción del examen"
+          rows={3}
         />
+        {errors.description && (
+          <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Materia
-          </label>
-          <select
-            name="subject"
-            value={formData.subject}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
+          <Label htmlFor="subject">Materia</Label>
+          <Select id="subject" {...register("subject")}>
             <option value="">Seleccionar materia</option>
             {subjects.map((subject) => (
               <option key={subject.id} value={subject.name}>
                 {subject.name}
               </option>
             ))}
-          </select>
+          </Select>
+          {errors.subject && (
+            <p className="text-sm text-red-600 mt-1">{errors.subject.message}</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Fecha del Examen *
-          </label>
-          <input
+          <Label htmlFor="examDate">Fecha del Examen *</Label>
+          <Input
+            id="examDate"
             type="date"
-            name="examDate"
-            required
-            value={formData.examDate}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+            {...register("examDate")}
           />
+          {errors.examDate && (
+            <p className="text-sm text-red-600 mt-1">{errors.examDate.message}</p>
+          )}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Ubicación
-        </label>
-        <input
-          type="text"
-          name="location"
-          value={formData.location}
-          onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-          placeholder="Ej: Aula 101, Edificio B"
+        <Label htmlFor="location">Lugar (opcional)</Label>
+        <Input
+          id="location"
+          {...register("location")}
+          placeholder="Ej: Aula 101, Biblioteca..."
         />
+        {errors.location && (
+          <p className="text-sm text-red-600 mt-1">{errors.location.message}</p>
+        )}
       </div>
 
       <div className="flex items-center">
         <input
           type="checkbox"
-          name="completed"
-          checked={formData.completed}
-          onChange={handleInputChange}
-          className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+          id="completed"
+          {...register("completed")}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
-        <label className="ml-2 block text-sm text-gray-700">
+        <Label htmlFor="completed" className="ml-2 block text-sm">
           Marcar como completado
-        </label>
+        </Label>
       </div>
 
       <div className="flex space-x-3 pt-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50"
-        >
+        <Button type="submit" disabled={loading} className="flex-1">
           {loading ? "Guardando..." : (editingExam ? "Actualizar" : "Crear")}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
           Cancelar
-        </button>
+        </Button>
       </div>
     </form>
   );

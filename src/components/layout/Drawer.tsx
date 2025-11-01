@@ -34,7 +34,7 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 backdrop-blur-sm z-40"
           onClick={onClose}
         />
       )}

@@ -1,9 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthService } from "../../lib/auth";
 import { HomeworkCollection } from "../../lib/collections/homework";
 import { SubjectsCollection, Subject } from "../../lib/collections/subjects";
+import { homeworkSchema, HomeworkFormData } from "../../lib/schemas";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
+import { Textarea } from "../ui/Textarea";
+import { Select } from "../ui/Select";
+import { Label } from "../ui/Label";
 
 interface HomeworkFormProps {
   onSuccess: () => void;
@@ -13,27 +21,40 @@ interface HomeworkFormProps {
 
 export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: HomeworkFormProps) {
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    subject: "",
-    dueDate: "",
-    completed: false
-  });
   const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm<HomeworkFormData>({
+    resolver: zodResolver(homeworkSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      subject: "",
+      dueDate: "",
+      completed: false,
+      link: "",
+    },
+  });
 
   useEffect(() => {
     loadSubjects();
     if (editingHomework) {
-      setFormData({
+      reset({
         title: editingHomework.title || "",
         description: editingHomework.description || "",
         subject: editingHomework.subject || "",
         dueDate: editingHomework.dueDate ? editingHomework.dueDate.toISOString().split('T')[0] : "",
-        completed: editingHomework.completed || false
+        completed: editingHomework.completed || false,
+        link: editingHomework.link || "",
       });
     }
-  }, [editingHomework]);
+  }, [editingHomework, reset]);
 
   const loadSubjects = async () => {
     try {
@@ -47,29 +68,19 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
-
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: HomeworkFormData) => {
     const user = AuthService.getCurrentUser();
     if (!user) return;
 
     setLoading(true);
     try {
       const homeworkData = {
-        title: formData.title,
-        description: formData.description,
-        subject: formData.subject,
-        dueDate: new Date(formData.dueDate),
-        completed: formData.completed,
+        title: data.title,
+        description: data.description || "",
+        subject: data.subject,
+        dueDate: new Date(data.dueDate),
+        completed: data.completed,
+        link: data.link || undefined,
         userId: user.uid
       };
 
@@ -91,99 +102,96 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Título *
-        </label>
-        <input
-          type="text"
-          name="title"
-          required
-          value={formData.title}
-          onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <Label htmlFor="title">Título *</Label>
+        <Input
+          id="title"
+          {...register("title")}
           placeholder="Título de la tarea"
         />
+        {errors.title && (
+          <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>
+        )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Descripción
-        </label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <Label htmlFor="description">Descripción</Label>
+        <Textarea
+          id="description"
+          {...register("description")}
           placeholder="Descripción de la tarea"
+          rows={3}
         />
+        {errors.description && (
+          <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Materia
-          </label>
-          <select
-            name="subject"
-            value={formData.subject}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          <Label htmlFor="subject">Materia</Label>
+          <Select id="subject" {...register("subject")}>
             <option value="">Seleccionar materia</option>
             {subjects.map((subject) => (
               <option key={subject.id} value={subject.name}>
                 {subject.name}
               </option>
             ))}
-          </select>
+          </Select>
+          {errors.subject && (
+            <p className="text-sm text-red-600 mt-1">{errors.subject.message}</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Fecha de Entrega *
-          </label>
-          <input
+          <Label htmlFor="dueDate">Fecha de Entrega *</Label>
+          <Input
+            id="dueDate"
             type="date"
-            name="dueDate"
-            required
-            value={formData.dueDate}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            {...register("dueDate")}
           />
+          {errors.dueDate && (
+            <p className="text-sm text-red-600 mt-1">{errors.dueDate.message}</p>
+          )}
         </div>
+      </div>
+
+      <div>
+        <Label htmlFor="link">Enlace (opcional)</Label>
+        <Input
+          id="link"
+          type="url"
+          {...register("link")}
+          placeholder="https://ejemplo.com/tarea.pdf"
+        />
+        {errors.link && (
+          <p className="text-sm text-red-600 mt-1">{errors.link.message}</p>
+        )}
+        <p className="text-xs text-gray-500 mt-1">
+          Enlace al PDF o documento de la tarea
+        </p>
       </div>
 
       <div className="flex items-center">
         <input
           type="checkbox"
-          name="completed"
-          checked={formData.completed}
-          onChange={handleInputChange}
+          id="completed"
+          {...register("completed")}
           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
-        <label className="ml-2 block text-sm text-gray-700">
+        <Label htmlFor="completed" className="ml-2 block text-sm">
           Marcar como completada
-        </label>
+        </Label>
       </div>
 
       <div className="flex space-x-3 pt-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50"
-        >
+        <Button type="submit" disabled={loading} className="flex-1">
           {loading ? "Guardando..." : (editingHomework ? "Actualizar" : "Crear")}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
           Cancelar
-        </button>
+        </Button>
       </div>
     </form>
   );
