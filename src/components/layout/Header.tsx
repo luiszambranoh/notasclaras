@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu, LogOut } from "lucide-react";
-import { AuthService } from "../../lib/auth";
+import { AuthService } from "@/lib/auth";
 
 interface HeaderProps {
   onMenuClick: () => void;

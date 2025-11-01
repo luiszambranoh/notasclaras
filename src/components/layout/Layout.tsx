@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Drawer from "./Drawer";
 import Header from "./Header";
-import FAB from "../ui/FAB";
-import { useModal } from "../../contexts/ModalContext";
-import HomeworkForm from "../forms/HomeworkForm";
-import ExamForm from "../forms/ExamForm";
+import FAB from "@/components/ui/FAB";
+import { useModal } from "@/contexts/ModalContext";
+import HomeworkForm from "@/components/forms/HomeworkForm";
+import ExamForm from "@/components/forms/ExamForm";
 
 interface LayoutProps {
   children: React.ReactNode;

@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
-import { AuthService } from "../lib/auth";
-import { UsersCollection } from "../lib/collections/users";
-import { HomeworkCollection, Homework } from "../lib/collections/homework";
-import { ExamsCollection, Exam } from "../lib/collections/exams";
-import Layout from "../components/layout/Layout";
+import { AuthService } from "@/lib/auth";
+import { UsersCollection } from "@/lib/collections/users";
+import { HomeworkCollection, Homework } from "@/lib/collections/homework";
+import { ExamsCollection, Exam } from "@/lib/collections/exams";
+import Layout from "@/components/layout/Layout";
 
 type Event = (Homework & { type: 'homework' }) | (Exam & { type: 'exam' });
 

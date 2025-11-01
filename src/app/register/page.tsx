@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
-import { AuthService } from "../../lib/auth";
-import { UsersCollection } from "../../lib/collections/users";
+import { AuthService } from "@/lib/auth";
+import { UsersCollection } from "@/lib/collections/users";
 
 const universities = [
   "Otra"

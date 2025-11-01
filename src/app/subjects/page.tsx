@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AuthService } from "../../lib/auth";
-import { SubjectsCollection, Subject } from "../../lib/collections/subjects";
-import { ProfessorsCollection, Professor } from "../../lib/collections/professors";
-import Layout from "../../components/layout/Layout";
+import { AuthService } from "@/lib/auth";
+import { SubjectsCollection, Subject } from "@/lib/collections/subjects";
+import { ProfessorsCollection, Professor } from "@/lib/collections/professors";
+import Layout from "@/components/layout/Layout";
 import { Plus, Edit, Trash2, Clock, User } from "lucide-react";
 import { useModal } from "../../contexts/ModalContext";
 import SubjectForm from "./components/SubjectForm";

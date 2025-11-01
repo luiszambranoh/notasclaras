@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AuthService } from "../../lib/auth";
-import { ProfessorsCollection, Professor } from "../../lib/collections/professors";
-import Layout from "../../components/layout/Layout";
+import { AuthService } from "@/lib/auth";
+import { ProfessorsCollection, Professor } from "@/lib/collections/professors";
+import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Plus, Edit, Trash2, Mail, Phone } from "lucide-react";
 import { useModal } from "../../contexts/ModalContext";

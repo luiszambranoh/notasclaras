@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AuthService } from "../../lib/auth";
-import { UsersCollection } from "../../lib/collections/users";
-import Layout from "../../components/layout/Layout";
+import { AuthService } from "@/lib/auth";
+import { UsersCollection } from "@/lib/collections/users";
+import Layout from "@/components/layout/Layout";
 import { User, Mail, Calendar, GraduationCap, MapPin, Save } from "lucide-react";
 
 export default function SettingsPage() {

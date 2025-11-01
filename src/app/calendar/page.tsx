@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AuthService } from "../../lib/auth";
-import { HomeworkCollection, Homework } from "../../lib/collections/homework";
-import { ExamsCollection, Exam } from "../../lib/collections/exams";
-import Layout from "../../components/layout/Layout";
+import { AuthService } from "@/lib/auth";
+import { HomeworkCollection, Homework } from "@/lib/collections/homework";
+import { ExamsCollection, Exam } from "@/lib/collections/exams";
+import Layout from "@/components/layout/Layout";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, BookOpen, FileText, CheckCircle, Circle } from "lucide-react";
 import { useModal } from "../../contexts/ModalContext";
 import HomeworkForm from "../../components/forms/HomeworkForm";

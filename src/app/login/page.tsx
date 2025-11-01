@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AuthService } from "../../lib/auth";
-import { UsersCollection } from "../../lib/collections/users";
+import { AuthService } from "@/lib/auth";
+import { UsersCollection } from "@/lib/collections/users";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);

@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthService } from "../../../lib/auth";
-import { SubjectsCollection } from "../../../lib/collections/subjects";
-import { ProfessorsCollection, Professor } from "../../../lib/collections/professors";
-import { subjectSchema, SubjectFormData } from "../../../lib/schemas";
-import { Button } from "../../../components/ui/Button";
-import { Input } from "../../../components/ui/Input";
-import { Select } from "../../../components/ui/Select";
-import { Label } from "../../../components/ui/Label";
+import { AuthService } from "@/lib/auth";
+import { SubjectsCollection } from "@/lib/collections/subjects";
+import { ProfessorsCollection, Professor } from "@/lib/collections/professors";
+import { subjectSchema, SubjectFormData } from "@/lib/schemas";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Label } from "@/components/ui/Label";
 import { Trash2 } from "lucide-react";
 
 interface SubjectFormProps {

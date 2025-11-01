@@ -2,12 +2,12 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthService } from "../../../lib/auth";
-import { ProfessorsCollection } from "../../../lib/collections/professors";
-import { professorSchema, ProfessorFormData } from "../../../lib/schemas";
-import { Button } from "../../../components/ui/Button";
-import { Input } from "../../../components/ui/Input";
-import { Textarea } from "../../../components/ui/Textarea";
+import { AuthService } from "@/lib/auth";
+import { ProfessorsCollection } from "@/lib/collections/professors";
+import { professorSchema, ProfessorFormData } from "@/lib/schemas";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface ProfessorFormProps {
   onSuccess: () => void;

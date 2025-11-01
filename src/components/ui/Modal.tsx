@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { X } from "lucide-react";
-import { useModal } from "../../contexts/ModalContext";
+import { useModal } from "@/contexts/ModalContext";
 
 export default function Modal() {
   const { isOpen, content, title, size, closeModal } = useModal();
