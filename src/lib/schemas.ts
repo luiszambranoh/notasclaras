@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Homework Schema
+// Homework Schema (Single object with optional collaboration)
 export const homeworkSchema = z.object({
   title: z.string().min(1, "El título es requerido"),
   description: z.string().optional(),
@@ -8,6 +8,11 @@ export const homeworkSchema = z.object({
   dueDate: z.string().min(1, "La fecha de entrega es requerida"),
   completed: z.boolean(),
   link: z.string().optional(),
+  subtasks: z.array(z.object({
+    title: z.string().min(1, "El título de la subtarea es requerido"),
+    description: z.string().optional(),
+    completed: z.boolean().default(false),
+  })).optional().default([]),
 }).refine((data) => {
   // If link is provided, it should be a string (no validation)
   if (data.link !== undefined && data.link !== "") {

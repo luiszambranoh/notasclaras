@@ -26,6 +26,7 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     setValue,
     watch,
@@ -39,6 +40,7 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
       dueDate: "",
       completed: false,
       link: "",
+      subtasks: [{ title: "", description: "", completed: false }],
     },
   });
 
@@ -81,7 +83,14 @@ export default function HomeworkForm({ onSuccess, onCancel, editingHomework }: H
         dueDate: new Date(data.dueDate),
         completed: data.completed,
         link: data.link || "",
-        userId: user.uid
+        userId: user.uid,
+        subtasks: data.subtasks?.filter(subtask => subtask.title.trim() !== "").map((subtask: any) => ({
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          title: subtask.title,
+          description: subtask.description || "",
+          completed: subtask.completed,
+          assignedTo: [],
+        })) || [],
       };
 
       if (editingHomework) {

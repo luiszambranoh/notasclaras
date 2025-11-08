@@ -1944,3 +1944,67 @@ E1101 18:02:22.201718   10368 watch.go:102] watchAllDir unable to walk dir `c:\c
  {"metadata":{"emulator":{"name":"dataconnect"},"message":"E1101 18:04:32.207656   10368 watch.go:31] Failed to load config from \"c:\\\\code\\\\notasclaras\\\\dataconnect\": could not find dataconnect.yaml in `c:\\code\\notasclaras\\dataconnect`\n"}}
 [debug] [2025-11-01T22:04:42.211Z] E1101 18:04:42.211698   10368 watch.go:31] Failed to load config from "c:\\code\\notasclaras\\dataconnect": could not find dataconnect.yaml in `c:\code\notasclaras\dataconnect`
  {"metadata":{"emulator":{"name":"dataconnect"},"message":"E1101 18:04:42.211698   10368 watch.go:31] Failed to load config from \"c:\\\\code\\\\notasclaras\\\\dataconnect\": could not find dataconnect.yaml in `c:\\code\\notasclaras\\dataconnect`\n"}}
+[debug] [2025-11-04T01:18:22.377Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-11-04T01:18:39.859Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-11-04T01:18:39.873Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-04T01:18:39.873Z] > authorizing via signed-in user (zambranohle@gmail.com)
+[debug] [2025-11-04T01:18:39.878Z] Checked if tokens are valid: false, expires at: 1762101809982
+[debug] [2025-11-04T01:18:39.878Z] Checked if tokens are valid: false, expires at: 1762101809982
+[debug] [2025-11-04T01:18:39.879Z] > refreshing access token with scopes: []
+[debug] [2025-11-04T01:18:39.881Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-11-04T01:18:39.882Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-04T01:18:39.893Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.15.0) on port 50001
+[debug] [2025-11-04T01:18:40.910Z] 'fdc build' failed with error: Unable to build your Data Connect schema and connectors (exit code 1): E1103 21:18:40.907051   18748 cmd.go:43] Error loading data connect config: could not find dataconnect.yaml in `c:\code\notasclaras\dataconnect`
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"'fdc build' failed with error: Unable to build your Data Connect schema and connectors (exit code 1): E1103 21:18:40.907051   18748 cmd.go:43] Error loading data connect config: could not find dataconnect.yaml in `c:\\code\\notasclaras\\dataconnect`\n"}}
+[debug] [2025-11-04T01:18:40.911Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-11-04T01:18:40.912Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-11-04T01:18:40.912Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\Gonzalez\\.cache\\firebase\\emulators\\dataconnect-emulator-2.15.0.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50001","--config_dir=c:\\code\\notasclaras\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\Gonzalez\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.15.0.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50001\",\"--config_dir=c:\\\\code\\\\notasclaras\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-11-04T01:18:41.038Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-11-04T01:18:41.039Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-04T01:18:41.063Z] [Firebase Plugin] User found:  zambranohle@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-11-04T01:18:41.066Z] Checked if tokens are valid: true, expires at: 1762222720039
+[debug] [2025-11-04T01:18:41.067Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-11-04T01:18:41.070Z] E1103 21:18:41.041061   11700 dev.go:79] Failed to load initial config from "c:\\code\\notasclaras\\dataconnect": could not find dataconnect.yaml in `c:\code\notasclaras\dataconnect`
+E1103 21:18:41.043294   11700 watch.go:102] watchAllDir unable to walk dir `c:\code\notasclaras\dataconnect`: CreateFile c:\code\notasclaras\dataconnect: The system cannot find the file specified.
+I1103 21:18:41.062177   11700 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:50001
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"E1103 21:18:41.041061   11700 dev.go:79] Failed to load initial config from \"c:\\\\code\\\\notasclaras\\\\dataconnect\": could not find dataconnect.yaml in `c:\\code\\notasclaras\\dataconnect`\nE1103 21:18:41.043294   11700 watch.go:102] watchAllDir unable to walk dir `c:\\code\\notasclaras\\dataconnect`: CreateFile c:\\code\\notasclaras\\dataconnect: The system cannot find the file specified.\nI1103 21:18:41.062177   11700 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:50001\n"}}
+[error] [Firebase Plugin] error:  {}
+[debug] [2025-11-04T01:18:41.801Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-11-04T01:18:41.801Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] [Firebase Plugin] Stopping Data Connect toolkit
+[warn] !  Data Connect Emulator has exited upon receiving signal: SIGINT 
+[debug] [2025-11-08T23:23:35.313Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-11-08T23:23:49.663Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-11-08T23:23:49.667Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-08T23:23:49.667Z] > authorizing via signed-in user (rifasportuguesa@gmail.com)
+[debug] [2025-11-08T23:23:49.672Z] Checked if tokens are valid: false, expires at: 1762643749877
+[debug] [2025-11-08T23:23:49.673Z] Checked if tokens are valid: false, expires at: 1762643749877
+[debug] [2025-11-08T23:23:49.673Z] > refreshing access token with scopes: []
+[debug] [2025-11-08T23:23:49.676Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-11-08T23:23:49.676Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-08T23:23:49.689Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.15.0) on port 50001
+[debug] [2025-11-08T23:23:50.818Z] 'fdc build' failed with error: Unable to build your Data Connect schema and connectors (exit code 1): E1108 19:23:50.815415    2760 cmd.go:43] Error loading data connect config: could not find dataconnect.yaml in `c:\code\notasclaras\dataconnect`
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"'fdc build' failed with error: Unable to build your Data Connect schema and connectors (exit code 1): E1108 19:23:50.815415    2760 cmd.go:43] Error loading data connect config: could not find dataconnect.yaml in `c:\\code\\notasclaras\\dataconnect`\n"}}
+[debug] [2025-11-08T23:23:50.819Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-11-08T23:23:50.819Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-11-08T23:23:50.820Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\Gonzalez\\.cache\\firebase\\emulators\\dataconnect-emulator-2.15.0.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50001","--config_dir=c:\\code\\notasclaras\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\Gonzalez\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.15.0.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50001\",\"--config_dir=c:\\\\code\\\\notasclaras\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-11-08T23:23:50.885Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-11-08T23:23:50.886Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-08T23:23:50.907Z] [Firebase Plugin] User found:  rifasportuguesa@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-11-08T23:23:50.908Z] Checked if tokens are valid: true, expires at: 1762647829886
+[debug] [2025-11-08T23:23:50.910Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-11-08T23:23:51.071Z] E1108 19:23:51.070932    9052 dev.go:79] Failed to load initial config from "c:\\code\\notasclaras\\dataconnect": could not find dataconnect.yaml in `c:\code\notasclaras\dataconnect`
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"E1108 19:23:51.070932    9052 dev.go:79] Failed to load initial config from \"c:\\\\code\\\\notasclaras\\\\dataconnect\": could not find dataconnect.yaml in `c:\\code\\notasclaras\\dataconnect`\n"}}
+[debug] [2025-11-08T23:23:51.088Z] E1108 19:23:51.081383    9052 watch.go:102] watchAllDir unable to walk dir `c:\code\notasclaras\dataconnect`: CreateFile c:\code\notasclaras\dataconnect: The system cannot find the file specified.
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"E1108 19:23:51.081383    9052 watch.go:102] watchAllDir unable to walk dir `c:\\code\\notasclaras\\dataconnect`: CreateFile c:\\code\\notasclaras\\dataconnect: The system cannot find the file specified.\n"}}
+[debug] [2025-11-08T23:23:51.202Z] I1108 19:23:51.201825    9052 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:50001
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1108 19:23:51.201825    9052 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:50001\n"}}
+[debug] [2025-11-08T23:23:51.396Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-11-08T23:23:51.397Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[error] [Firebase Plugin] error:  {}

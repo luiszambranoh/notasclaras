@@ -10,6 +10,29 @@ export interface Homework {
   subject: string;
   completed: boolean;
   link?: string;
+
+  // Colaboración opcional
+  collaborators?: {
+    userId: string;
+    email: string;
+    displayName: string;
+    joinedAt: Date;
+    completed: boolean; // Estado individual del colaborador
+    completedAt?: Date;
+  }[];
+
+  // Subtareas opcionales
+  subtasks?: {
+    id: string;
+    title: string;
+    description?: string;
+    completed: boolean;
+    completedAt?: Date;
+    completedBy?: string; // userId de quien completó
+    dueDate?: Date; // Fecha específica para subtarea
+    assignedTo?: string[]; // userIds asignados
+  }[];
+
   createdAt: Date;
   updatedAt: Date;
 }
